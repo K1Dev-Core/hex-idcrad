@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.32/sweetalert2.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.32/sweetalert2.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        body {
+            overflow: hidden;
+        }
+
+        .id-card-container {
+            position: fixed;
+            top: 150px;
+            right: 20px;
+            width: 536px;
+            height: 580px;
+            font-family: 'Sarabun', sans-serif;
+            display: none;
+        }
+
+        .id-card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background-image: url('./crad.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .location-input {
+            position: absolute;
+            top: 59px;
+            left: 253px;
+            width: 380px;
+            height: 25px;
+            border: none;
+            background: transparent;
+            font-size: 30px;
+            font-weight: 700;
+            color: #000000bc;
+            outline: none;
+            padding: 0;
+            pointer-events: none;
+        }
+
+        .name-input {
+            position: absolute;
+            bottom: 130px;
+            left: 88px;
+            width: 420px;
+            height: 25px;
+            border: none;
+            background: transparent;
+            font-size: 30px;
+            font-weight: 700;
+            color: #000000bc;
+            outline: none;
+            padding: 0;
+            pointer-events: none;
+        }
+
+        .profile-container {
+            position: absolute;
+            top: 116px;
+            left: 40px;
+            width: 273px;
+            height: 260px;
+            overflow: hidden;
+            background-color: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f0f0f0;
+            color: #666;
+            font-size: 16px;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 999;
+        }
+
+        .photo-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 1100px;
+            background: #222;
+            border: 1px solid #444;
+            border-radius: 8px;
+            z-index: 1000;
+            padding: 24px;
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #333;
+        }
+
+        .modal-header h2 {
+            color: #fff;
+            font-size: 24px;
+            font-weight: 500;
+        }
+
+        .modal-content {
+            display: flex;
+            gap: 24px;
+        }
+
+        .input-section {
+            flex: 1;
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .preview-section {
+            flex: 2;
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .url-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: #333;
+            border: 1px solid #444;
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .url-input:focus {
+            outline: none;
+            border-color: #666;
+            background: #383838;
+        }
+
+        .url-input::placeholder {
+            color: #777;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .save-button {
+            background: #404040;
+            color: white;
+        }
+
+        .save-button:hover {
+            background: #505050;
+        }
+
+        .cancel-button {
+            background: #333;
+            color: #ddd;
+        }
+
+        .cancel-button:hover {
+            background: #383838;
+        }
+
+        .preview-label {
+            color: #ddd;
+            font-size: 16px;
+            margin-bottom: 16px;
+            display: block;
+            text-align: center;
+        }
+
+        .preview-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+        }
+
+        .preview-card {
+            transform: scale(0.8);
+            transform-origin: top center;
+        }
+
+        .preview-card .id-card-container {
+            display: block;
+            position: relative;
+            top: 0;
+            right: 0;
+        }
+
+        .countdown-text {
+            position: fixed;
+            right: 20px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            text-align: right;
+            padding: 5px 10px;
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+        }
+
+        .input-section {
+            flex: 1;
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .url-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: #333;
+            border: 1px solid #444;
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .pire-label {
+            color: #888;
+            font-size: 13px;
+            text-align: left;
+            padding: 5px 0;
+            border-top: 1px solid #444;
+            margin-top: 5px;
+        }
+
+        .modal-content {
+            display: flex;
+            gap: 24px;
+            position: relative;
+            padding-top: 30px;
+        }
+
+        .upload-instruction {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            color: #888;
+            font-size: 14px;
+            padding: 8px 0;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .payment-notice {
+            color: #888;
+            font-size: 13px;
+            text-align: left;
+            padding: 5px 0;
+            border-top: 1px solid #444;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Main ID Card Display -->
+    <div class="id-card-container" id="mainCard">
+        <div class="id-card">
+            <input type="text" class="location-input" value="Saint Denis" readonly>
+            <input type="text" class="name-input" value="" readonly>
+            <div class="profile-container">
+                <div class="profile-placeholder">
+                    รูปโปรไฟล์
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="countdown-text" id="countdown" style="top: 620px;">จะหายไปใน: 10 วินาที</div>
+    <!-- Photo Update Modal -->
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="photo-modal" id="photoModal">
+        <div class="modal-header">
+            <h2>ทำบัตรประชาชน / อัพเดทรูปบัตรประชาชน </h2>
+        </div>
+
+        <div class="modal-content">
+            <div class="input-section">
+                <input type="text" class="url-input" id="photoUrl" placeholder="ใส่ลิงค์รูปภาพของคุณ..."
+                    oninput="previewImage(this.value)" autofocus>
+
+                <div class="button-group">
+
+                    <button class="modal-button save-button" onclick="submitPhoto()">
+                        บันทึก
+                    </button>
+                    <button class="modal-button cancel-button" onclick="closeModal()">
+                        ยกเลิก
+                    </button>
+                </div>
+                <span class="payment-notice">โปรดใช้รูปที่เห็นหน้าอย่างชัดเจน!</span>
+                <span class="payment-notice">หากไม่มีหนังสือเดินทาง เสีย 50 $</span>
+            </div>
+
+            <div class="preview-section">
+                <span class="preview-label">ตัวอย่างบัตรประชาชน</span>
+                <div class="preview-container">
+                    <div class="preview-card">
+                        <div class="id-card-container" id="previewCard">
+                            <div class="id-card">
+                                <input type="text" class="location-input" value="Saint Denis" readonly>
+                                <input type="text" class="name-input" id="previewName" value="" readonly>
+                                <div class="profile-container" id="previewContainer">
+                                    <div class="profile-placeholder">
+                                        รูปโปรไฟล์
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./app.js"></script>
+</body>
+
+</html>
